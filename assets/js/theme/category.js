@@ -30,10 +30,8 @@ export default class Category extends CatalogPage {
     }
 
     showSecondImageOnHover() {
-        const imageContainer = document.querySelector('.card-img-container');
-
-        const toggleVisibility = () => {
-            $(imageContainer).children().each((index, el) => {
+        const toggleVisibility = (event) => {
+            $(event.currentTarget).find('.card-img-container').children().each((_, el) => {
                 $(el).toggleClass('hide');
             });
         };
@@ -41,15 +39,11 @@ export default class Category extends CatalogPage {
         $('.card-figure').on('mouseenter mouseleave', toggleVisibility);
     }
 
-    async createCartAndAddProduct(productEntityId) {
-        const cartItems = {
-            lineItems: [
-                {
-                    quantity: 1,
-                    productId: productEntityId,
-                },
-            ],
-        };
+    async createCartAndAddProducts() {
+        const lineItems = this.context.products.map(product => ({
+            quantity: 1,
+            productId: product.id,
+        }));
 
         try {
             const response = await fetch('/api/storefront/carts', {
@@ -58,7 +52,7 @@ export default class Category extends CatalogPage {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(cartItems),
+                body: JSON.stringify({ lineItems }),
             });
 
             await response.json();
@@ -84,7 +78,7 @@ export default class Category extends CatalogPage {
         try {
             await fetch(`/api/storefront/carts/${cartId}`, options);
 
-            showAlertModal('Product was removed from the cart', {
+            showAlertModal('Products were removed from the cart', {
                 icon: '',
                 onConfirm: () => {
                     location.reload();
@@ -96,10 +90,8 @@ export default class Category extends CatalogPage {
     }
 
     addAllToCartHandler() {
-        $('#add_all_to_cart').on('click', async () => {
-            await this.getProductsByCurrentPath();
-
-            await this.createCartAndAddProduct(112);
+        $('#add_all_to_cart').on('click', () => {
+            this.createCartAndAddProducts();
         });
     }
 

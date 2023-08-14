@@ -1,4 +1,21 @@
 {{inject 'noCompareMessage' (lang 'compare.no_compare')}}
+{{inject 'products' category.products}}
+
+{{#if customer}}
+  <div style="text-align: center;">
+    <div>Customer details</div>
+    <div>
+      Nice to see you again, {{ customer.name }}<br>
+      Your email is {{ customer.email }}<br>
+      {{#if customer.phone}}
+        Your phone is {{ customer.phone }}.<br>
+      {{else}}
+        Kindly reminding you did not enter your phone number
+      {{/if}}
+      <br>
+    </div>
+  </div>
+{{/if}}
 
 {{#if category.products}}
     <div>
